@@ -6,7 +6,7 @@ print("================================")
 while True:
     print()
     print("1. Мои предметы")
-    print("2. Мои оценки")
+    print("2. Мои баллы")
     print("3. Мои задачи")
     print("4. Расписание")
     print("0. Выход")
@@ -17,7 +17,7 @@ while True:
         subjects_menu()
 
     elif choice == "2":
-        print("Раздел оценок")
+        print("Раздел баллы")
 
     elif choice == "3":
         print("Раздел задач")
