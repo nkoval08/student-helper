@@ -1,3 +1,4 @@
+from subjects import subjects_menu
 print("================================")
 print("        STUDENT HELPER")
 print("================================")
@@ -13,7 +14,7 @@ while True:
     choice = input("\nВыберите пункт: ")
 
     if choice == "1":
-        print("Раздел предметов")
+        subjects_menu()
 
     elif choice == "2":
         print("Раздел оценок")
