@@ -1,8 +1,8 @@
-from subjects import subjects_menu
+from subjects import subjects_menu, load_subjects
 print("================================")
 print("        STUDENT HELPER")
 print("================================")
-
+load_subjects()
 while True:
     print()
     print("1. Мои предметы")
