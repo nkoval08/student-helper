@@ -1,8 +1,10 @@
 from subjects import subjects_menu, load_subjects
+from grades import grades_menu, load_grades
 print("================================")
 print("        STUDENT HELPER")
 print("================================")
 load_subjects()
+load_grades()
 while True:
     print()
     print("1. Мои предметы")
@@ -17,7 +19,7 @@ while True:
         subjects_menu()
 
     elif choice == "2":
-        print("Раздел баллы")
+        grades_menu()
 
     elif choice == "3":
         print("Раздел задач")
