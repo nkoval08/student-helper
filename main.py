@@ -1,3 +1,4 @@
+from student_statistics import show_statistics
 from subjects import subjects_menu, load_subjects
 from grades import grades_menu, load_grades
 from tasks import tasks_menu, load_tasks
@@ -17,7 +18,8 @@ while True:
     print("2. Мои баллы")
     print("3. Мои задачи")
     print("4. Расписание")
-    print("5  Расходы")
+    print("5. Расходы")
+    print("6. Статистика")
     print("0. Выход")
 
     choice = input("\nВыберите пункт: ")
@@ -36,6 +38,9 @@ while True:
 
     elif choice == "5":
         expenses_menu()
+
+    elif choice == "6":
+        show_statistics()
 
     elif choice == "0":
         print("До свидания!")
