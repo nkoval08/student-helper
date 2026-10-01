@@ -7,16 +7,26 @@ from schedule import schedule_menu, load_schedule
 from expenses import expenses_menu, load_expenses
 from student_statistics import show_statistics
 
+RESET = "\033[0m"
+
+GREEN = "\033[92m"
+RED = "\033[91m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+CYAN = "\033[96m"
+WHITE = "\033[97m"
+MAGENTA = "\033[95m"
+
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 def show_header():
-    print("=" * 40)
-    print("         STUDENT HELPER")
-    print("=" * 40)
+    print(CYAN + "=" * 40 + RESET)
+    print(CYAN + "         STUDENT HELPER" + RESET)
+    print(CYAN + "=" * 40 + RESET)
 
 def pause():
-    input("\nНажмите Enter, чтобы продолжить...")
+    input(YELLOW + "\nНажмите Enter, чтобы продолжить..." + RESET)
 
 load_subjects()
 load_grades()
@@ -24,18 +34,18 @@ load_tasks()
 load_schedule()
 load_expenses()
 
-
 while True:
     clear_screen()
     show_header()
 
-    print("\n📚 1. Мои предметы")
-    print("📊 2. Мои оценки")
-    print("✅ 3. Мои задачи")
-    print("📅 4. Расписание")
-    print("💰 5. Расходы")
-    print("📈 6. Статистика")
-    print("🚪 0. Выход")
+    print()
+    print(BLUE + "📚 1. Мои предметы" + RESET)
+    print(GREEN + "📊 2. Мои оценки" + RESET)
+    print(YELLOW + "✅ 3. Мои задачи" + RESET)
+    print(CYAN + "📅 4. Расписание" + RESET)
+    print(MAGENTA + "💰 5. Расходы" + RESET)
+    print(WHITE + "📈 6. Статистика" + RESET)
+    print(RED + "🚪 0. Выход" + RESET)
 
     choice = input("\nВыберите пункт: ")
 
@@ -71,9 +81,9 @@ while True:
 
     elif choice == "0":
         clear_screen()
-        print("До свидания! 👋")
+        print(GREEN + "До свидания! 👋" + RESET)
         break
 
     else:
-        print("\n❌ Такого пункта нет.")
+        print(RED + "\n❌ Такого пункта нет." + RESET)
         pause()
