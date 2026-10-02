@@ -6,6 +6,7 @@ from tasks import tasks_menu, load_tasks
 from schedule import schedule_menu, load_schedule
 from expenses import expenses_menu, load_expenses
 from student_statistics import show_statistics
+from interface import pause
 
 RESET = "\033[0m"
 
