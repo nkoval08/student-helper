@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
+
 import subjects
+from interface import show_title, show_success, show_error, show_warning
 
 DATA_FILE = Path(__file__).resolve().parent / "data" / "grades.json"
 
@@ -144,16 +146,16 @@ def show_average():
         print(f"\nОбщий средний балл: {total_average:.2f}")
 
 def grades_menu():
-    """Меню оценок."""
     while True:
-        print("\n=== МОИ ОЦЕНКИ ===")
+        show_title("МОИ ОЦЕНКИ")
+
         print("1. Добавить оценку")
         print("2. Показать оценки")
-        print("3. Удалить оценку")
-        print("4. Средний балл")
+        print("3. Средний балл")
+        print("4. Удалить оценку")
         print("0. Назад")
 
-        choice = input("Выберите пункт: ")
+        choice = input("\nВыберите пункт: ")
 
         if choice == "1":
             add_grade()
@@ -162,13 +164,13 @@ def grades_menu():
             show_grades()
 
         elif choice == "3":
-            delete_grade()
+            show_average()
 
         elif choice == "4":
-            show_average()
+            delete_grade()
 
         elif choice == "0":
             break
 
         else:
-            print("Такого пункта нет.")
+            show_error("Такого пункта нет.")
