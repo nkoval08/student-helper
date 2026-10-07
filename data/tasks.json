@@ -2,6 +2,11 @@
     {
         "title": "выполнить  xetcoder",
         "deadline": "28.09.2026",
-        "completed": false
+        "completed": true
+    },
+    {
+        "title": "выполнить КР по АГиДУ",
+        "deadline": "20.12.2026",
+        "completed": true
     }
 ]

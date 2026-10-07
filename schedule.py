@@ -1,43 +1,46 @@
 import json
 from pathlib import Path
 
+from interface import show_title, show_success, show_error, show_warning
+
+
 DATA_FILE = Path(__file__).resolve().parent / "data" / "schedule.json"
 
 schedule = []
 
+
 def load_schedule():
-    """Загружает расписание."""
     global schedule
 
     if DATA_FILE.exists():
         with open(DATA_FILE, "r", encoding="utf-8") as file:
             schedule = json.load(file)
 
+
 def save_schedule():
-    """Сохраняет расписание."""
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(schedule, file, ensure_ascii=False, indent=4)
 
+
 def add_lesson():
-    """Добавляет занятие."""
     day = input("Введите день недели: ")
 
     if not day:
-        print("День недели не может быть пустым.")
+        show_error("День недели не может быть пустым.")
         return
 
     time = input("Введите время занятия (например, 09:00): ")
 
     if not time:
-        print("Время не может быть пустым.")
+        show_error("Время не может быть пустым.")
         return
 
     subject = input("Введите название предмета: ")
 
     if not subject:
-        print("Название предмета не может быть пустым.")
+        show_error("Название предмета не может быть пустым.")
         return
 
     lesson = {
@@ -49,13 +52,15 @@ def add_lesson():
     schedule.append(lesson)
     save_schedule()
 
-    print("Занятие добавлено!")
+    show_success(f'Занятие "{subject}" добавлено!')
+
 
 def show_schedule():
-    """Показывает расписание."""
     if not schedule:
-        print("Расписание пока пустое.")
+        show_warning("Расписание пока пустое.")
         return
+
+    show_title("РАСПИСАНИЕ")
 
     days = [
         "Понедельник",
@@ -67,11 +72,10 @@ def show_schedule():
         "Воскресенье"
     ]
 
-    print("\n=== РАСПИСАНИЕ ===")
-
     for day in days:
         lessons = [
-            lesson for lesson in schedule
+            lesson
+            for lesson in schedule
             if lesson["day"].lower() == day.lower()
         ]
 
@@ -80,52 +84,53 @@ def show_schedule():
 
             lessons.sort(key=lambda lesson: lesson["time"])
 
-            for number, lesson in enumerate(lessons, start=1):
-                print(f"{number}. {lesson['time']} — {lesson['subject']}")
+            for lesson in lessons:
+                print(f"  {lesson['time']} — {lesson['subject']}")
+
 
 def delete_lesson():
-    """Удаляет занятие."""
     if not schedule:
-        print("Расписание пока пустое.")
+        show_warning("Расписание пока пустое.")
         return
 
     print("\nВсе занятия:")
 
     for number, lesson in enumerate(schedule, start=1):
         print(
-            f"{number}. {lesson['day']} — "
-            f"{lesson['time']} — {lesson['subject']}"
+            f"{number}. "
+            f"{lesson['day']} — "
+            f"{lesson['time']} — "
+            f"{lesson['subject']}"
         )
 
     try:
-        number = int(input("Введите номер занятия для удаления: "))
+        number = int(input("\nВведите номер занятия для удаления: "))
 
         if 1 <= number <= len(schedule):
             deleted_lesson = schedule.pop(number - 1)
-
             save_schedule()
 
-            print(
-                f"Занятие '{deleted_lesson['subject']}' "
-                f"удалено!"
+            show_success(
+                f'Занятие "{deleted_lesson["subject"]}" удалено!'
             )
 
         else:
-            print("Такого номера нет.")
+            show_error("Такого номера нет.")
 
     except ValueError:
-        print("Введите число.")
+        show_error("Введите число.")
+
 
 def schedule_menu():
-    """Меню расписания."""
     while True:
-        print("\n=== РАСПИСАНИЕ ===")
+        show_title("РАСПИСАНИЕ")
+
         print("1. Добавить занятие")
         print("2. Показать расписание")
         print("3. Удалить занятие")
         print("0. Назад")
 
-        choice = input("Выберите пункт: ")
+        choice = input("\nВыберите пункт: ")
 
         if choice == "1":
             add_lesson()
@@ -140,4 +145,4 @@ def schedule_menu():
             break
 
         else:
-            print("Такого пункта нет.")
+            show_error("Такого пункта нет.")
