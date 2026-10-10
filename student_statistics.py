@@ -1,26 +1,21 @@
+
 import subjects
 import grades
 import tasks
 import schedule
 import expenses
 
+from interface import show_title, show_warning
+
+
 def show_statistics():
-    """Показывает общую статистику студента."""
+    show_title("СТАТИСТИКА СТУДЕНТА")
 
-    print("\n=== СТАТИСТИКА ===")
-
-    # -------------------------
-    # ПРЕДМЕТЫ
-    # -------------------------
-
+    # Количество предметов
     subjects_count = len(subjects.subjects)
-
     print(f"\n📚 Предметов: {subjects_count}")
 
-    # -------------------------
-    # ОЦЕНКИ
-    # -------------------------
-
+    # Средний балл
     all_grades = []
 
     for subject_grades in grades.grades.values():
@@ -30,39 +25,25 @@ def show_statistics():
         average = sum(all_grades) / len(all_grades)
         print(f"📊 Средний балл: {average:.2f}")
     else:
-        print("📊 Средний балл: пока нет оценок")
+        show_warning("Оценок пока нет.")
 
-    # -------------------------
-    # ЗАДАЧИ
-    # -------------------------
+    # Задачи
+    completed_tasks = sum(
+        1 for task in tasks.tasks if task["completed"]
+    )
 
-    completed_tasks = 0
-    uncompleted_tasks = 0
-
-    for task in tasks.tasks:
-        if task["completed"]:
-            completed_tasks += 1
-        else:
-            uncompleted_tasks += 1
+    uncompleted_tasks = len(tasks.tasks) - completed_tasks
 
     print(f"\n✅ Выполненных задач: {completed_tasks}")
     print(f"❌ Невыполненных задач: {uncompleted_tasks}")
 
-    # -------------------------
-    # РАСПИСАНИЕ
-    # -------------------------
-
+    # Расписание
     lessons_count = len(schedule.schedule)
-
     print(f"\n📅 Занятий в расписании: {lessons_count}")
 
-    # -------------------------
-    # РАСХОДЫ
-    # -------------------------
-
+    # Расходы
     total_expenses = sum(
-        expense["amount"]
-        for expense in expenses.expenses
+        expense["amount"] for expense in expenses.expenses
     )
 
     print(f"\n💰 Общая сумма расходов: {total_expenses:.2f} ₽")
