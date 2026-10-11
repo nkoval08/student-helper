@@ -42,6 +42,33 @@ def show_subjects():
     for number, subject in enumerate(subjects, start=1):
         print(f"{number}. {subject}")
 
+def search_subjects():
+    if not subjects:
+        show_warning("Предметов пока нет.")
+        return
+
+    search_name = input(
+        "Введите название предмета или его часть: "
+    ).strip().lower()
+
+    if not search_name:
+        show_error("Поисковый запрос не может быть пустым.")
+        return
+
+    found_subjects = []
+
+    for subject in subjects:
+        if search_name in subject.lower():
+            found_subjects.append(subject)
+
+    if found_subjects:
+        show_title("РЕЗУЛЬТАТЫ ПОИСКА")
+
+        for number, subject in enumerate(found_subjects, start=1):
+            print(f"{number}. {subject}")
+    else:
+        show_warning("Предметы по вашему запросу не найдены.")
+
 def delete_subject():
     if not subjects:
         show_warning("Предметов пока нет.")
@@ -66,6 +93,7 @@ def delete_subject():
     except ValueError:
         show_error("Введите число.")
 
+
 def subjects_menu():
     while True:
         show_title("МОИ ПРЕДМЕТЫ")
@@ -73,6 +101,7 @@ def subjects_menu():
         print("1. Добавить предмет")
         print("2. Показать предметы")
         print("3. Удалить предмет")
+        print("4. Найти предмет")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -85,6 +114,9 @@ def subjects_menu():
 
         elif choice == "3":
             delete_subject()
+
+        elif choice == "4":
+            search_subjects()
 
         elif choice == "0":
             break
