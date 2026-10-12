@@ -69,6 +69,17 @@ def search_subjects():
     else:
         show_warning("Предметы по вашему запросу не найдены.")
 
+def sort_subjects():
+    if not subjects:
+        show_warning("Предметов пока нет.")
+        return
+
+    subjects.sort(key=str.lower)
+    save_subjects()
+
+    show_success("Предметы отсортированы по алфавиту!")
+    show_subjects()
+
 def delete_subject():
     if not subjects:
         show_warning("Предметов пока нет.")
@@ -94,6 +105,7 @@ def delete_subject():
         show_error("Введите число.")
 
 
+
 def subjects_menu():
     while True:
         show_title("МОИ ПРЕДМЕТЫ")
@@ -102,24 +114,22 @@ def subjects_menu():
         print("2. Показать предметы")
         print("3. Удалить предмет")
         print("4. Найти предмет")
+        print("5. Сортировать по алфавиту")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
 
         if choice == "1":
             add_subject()
-
         elif choice == "2":
             show_subjects()
-
         elif choice == "3":
             delete_subject()
-
         elif choice == "4":
             search_subjects()
-
+        elif choice == "5":
+            sort_subjects()
         elif choice == "0":
             break
-
         else:
             show_error("Такого пункта нет.")
