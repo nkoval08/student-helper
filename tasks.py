@@ -19,29 +19,51 @@ def save_tasks():
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(tasks, file, ensure_ascii=False, indent=4)
 
+
 def add_task():
-    title = input("Введите название задачи: ")
+    title = input("Введите название задачи: ").strip()
 
     if not title:
         show_error("Название задачи не может быть пустым.")
         return
 
-    deadline = input("Введите дедлайн (например, 28.09.2026): ")
+    deadline = input(
+        "Введите дедлайн (например, 28.10.2026): "
+    ).strip()
 
     if not deadline:
         show_error("Дедлайн не может быть пустым.")
         return
 
+    print("\nВыберите приоритет:")
+    print("1. Низкий")
+    print("2. Средний")
+    print("3. Высокий")
+
+    priority_choice = input("Ваш выбор: ")
+
+    priorities = {
+        "1": "Низкий",
+        "2": "Средний",
+        "3": "Высокий"
+    }
+
+    if priority_choice not in priorities:
+        show_error("Неверный выбор приоритета.")
+        return
+
     task = {
         "title": title,
         "deadline": deadline,
-        "completed": False
+        "completed": False,
+        "priority": priorities[priority_choice]
     }
 
     tasks.append(task)
     save_tasks()
 
     show_success(f'Задача "{title}" добавлена!')
+
 
 def show_tasks():
     if not tasks:
@@ -51,14 +73,16 @@ def show_tasks():
     show_title("МОИ ЗАДАЧИ")
 
     for number, task in enumerate(tasks, start=1):
-
         if task["completed"]:
             status = "✅ Выполнена"
         else:
             status = "❌ Не выполнена"
 
+        priority = task.get("priority", "Средний")
+
         print(f"\n{number}. {task['title']}")
         print(f"   Дедлайн: {task['deadline']}")
+        print(f"   Приоритет: {priority}")
         print(f"   Статус: {status}")
 
 def complete_task():

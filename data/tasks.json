@@ -8,5 +8,17 @@
         "title": "выполнить КР по АГиДУ",
         "deadline": "20.12.2026",
         "completed": true
+    },
+    {
+        "title": "подготовить \"тысячи\"",
+        "deadline": "20.12.2026",
+        "completed": false,
+        "priority": "Средний"
+    },
+    {
+        "title": "командная работа по вайб коддингу",
+        "deadline": "25.10.2026",
+        "completed": false,
+        "priority": "Высокий"
     }
 ]
