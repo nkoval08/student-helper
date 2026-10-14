@@ -65,6 +65,7 @@ def add_task():
     show_success(f'Задача "{title}" добавлена!')
 
 
+
 def show_tasks():
     if not tasks:
         show_warning("Задач пока нет.")
@@ -72,7 +73,20 @@ def show_tasks():
 
     show_title("МОИ ЗАДАЧИ")
 
-    for number, task in enumerate(tasks, start=1):
+    priority_order = {
+        "Высокий": 1,
+        "Средний": 2,
+        "Низкий": 3
+    }
+
+    sorted_tasks = sorted(
+        tasks,
+        key=lambda task: priority_order.get(
+            task.get("priority", "Средний"), 2
+        )
+    )
+
+    for number, task in enumerate(sorted_tasks, start=1):
         if task["completed"]:
             status = "✅ Выполнена"
         else:
