@@ -99,6 +99,55 @@ def show_tasks():
         print(f"   Приоритет: {priority}")
         print(f"   Статус: {status}")
 
+def filter_tasks():
+    if not tasks:
+        show_warning("Задач пока нет.")
+        return
+
+    print("\nКакие задачи показать?")
+    print("1. Все задачи")
+    print("2. Только невыполненные")
+    print("3. Только выполненные")
+
+    choice = input("Выберите пункт: ")
+
+    if choice == "1":
+        filtered_tasks = tasks
+    elif choice == "2":
+        filtered_tasks = [
+            task for task in tasks
+            if not task["completed"]
+        ]
+    elif choice == "3":
+        filtered_tasks = [
+            task for task in tasks
+            if task["completed"]
+        ]
+    else:
+        show_error("Такого пункта нет.")
+        return
+
+    if not filtered_tasks:
+        show_warning("Задач с таким статусом нет.")
+        return
+
+    show_title("РЕЗУЛЬТАТЫ ФИЛЬТРА")
+
+    for number, task in enumerate(filtered_tasks, start=1):
+        status = (
+            "Выполнена"
+            if task["completed"]
+            else "Не выполнена"
+        )
+
+        print(f"\n{number}. {task['title']}")
+        print(f"   Дедлайн: {task['deadline']}")
+        print(
+            f"   Приоритет: "
+            f"{task.get('priority', 'Средний')}"
+        )
+        print(f"   Статус: {status}")
+
 def complete_task():
     if not tasks:
         show_warning("Задач пока нет.")
@@ -153,6 +202,7 @@ def tasks_menu():
         print("2. Показать задачи")
         print("3. Выполнить задачу")
         print("4. Удалить задачу")
+        print("5. Фильтр задач")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -168,6 +218,9 @@ def tasks_menu():
 
         elif choice == "4":
             delete_task()
+
+        elif choice == "5":
+            filter_tasks()
 
         elif choice == "0":
             break
