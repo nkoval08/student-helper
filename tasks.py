@@ -194,6 +194,43 @@ def delete_task():
     except ValueError:
         show_error("Введите число.")
 
+def change_deadline():
+    if not tasks:
+        show_warning("Задач пока нет.")
+        return
+
+    show_title("ИЗМЕНЕНИЕ ДЕДЛАЙНА")
+
+    # Показываем задачи в порядке хранения,
+    # чтобы выбранный номер соответствовал нужной задаче.
+    for number, task in enumerate(tasks, start=1):
+        print(f"{number}. {task['title']} — {task['deadline']}")
+
+    try:
+        number = int(input("\nВведите номер задачи: "))
+
+        if number < 1 or number > len(tasks):
+            show_error("Такого номера нет.")
+            return
+
+    except ValueError:
+        show_error("Введите номер цифрами.")
+        return
+
+    new_deadline = input(
+        "Введите новый дедлайн (например, 28.10.2026): "
+    ).strip()
+
+    if not new_deadline:
+        show_error("Дедлайн не может быть пустым.")
+        return
+
+    task = tasks[number - 1]
+    task["deadline"] = new_deadline
+
+    save_tasks()
+    show_success("Дедлайн успешно изменён!")
+
 def tasks_menu():
     while True:
         show_title("МОИ ЗАДАЧИ")
@@ -203,6 +240,7 @@ def tasks_menu():
         print("3. Выполнить задачу")
         print("4. Удалить задачу")
         print("5. Фильтр задач")
+        print("6. Изменить дедлайн")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -221,6 +259,9 @@ def tasks_menu():
 
         elif choice == "5":
             filter_tasks()
+
+        elif choice == "6":
+            change_deadline()
 
         elif choice == "0":
             break
