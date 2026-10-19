@@ -231,6 +231,40 @@ def change_deadline():
     save_tasks()
     show_success("Дедлайн успешно изменён!")
 
+def change_task_title():
+    if not tasks:
+        show_warning("Задач пока нет.")
+        return
+
+    show_title("ИЗМЕНЕНИЕ НАЗВАНИЯ ЗАДАЧИ")
+
+    # Показываем задачи в порядке хранения,
+    # чтобы номер точно соответствовал нужной задаче.
+    for number, task in enumerate(tasks, start=1):
+        print(f"{number}. {task['title']}")
+
+    try:
+        number = int(input("\nВведите номер задачи: "))
+
+        if number < 1 or number > len(tasks):
+            show_error("Такого номера нет.")
+            return
+
+    except ValueError:
+        show_error("Введите номер цифрами.")
+        return
+
+    new_title = input("Введите новое название задачи: ").strip()
+
+    if not new_title:
+        show_error("Название не может быть пустым.")
+        return
+
+    tasks[number - 1]["title"] = new_title
+
+    save_tasks()
+    show_success("Название задачи изменено!")
+
 def tasks_menu():
     while True:
         show_title("МОИ ЗАДАЧИ")
@@ -241,6 +275,7 @@ def tasks_menu():
         print("4. Удалить задачу")
         print("5. Фильтр задач")
         print("6. Изменить дедлайн")
+        print("7. Изменить название задачи")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -262,6 +297,9 @@ def tasks_menu():
 
         elif choice == "6":
             change_deadline()
+
+        elif choice == "7":
+            change_task_title()
 
         elif choice == "0":
             break
