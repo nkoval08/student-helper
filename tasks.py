@@ -265,6 +265,50 @@ def change_task_title():
     save_tasks()
     show_success("Название задачи изменено!")
 
+def change_task_priority():
+    if not tasks:
+        show_warning("Задач пока нет.")
+        return
+
+    show_title("ИЗМЕНЕНИЕ ПРИОРИТЕТА")
+
+    for number, task in enumerate(tasks, start=1):
+        priority = task.get("priority", "Средний")
+        print(f"{number}. {task['title']} — {priority}")
+
+    try:
+        number = int(input("\nВведите номер задачи: "))
+
+        if number < 1 or number > len(tasks):
+            show_error("Такого номера нет.")
+            return
+
+    except ValueError:
+        show_error("Введите номер цифрами.")
+        return
+
+    print("\nВыберите новый приоритет:")
+    print("1. Низкий")
+    print("2. Средний")
+    print("3. Высокий")
+
+    choice = input("Ваш выбор: ")
+
+    priorities = {
+        "1": "Низкий",
+        "2": "Средний",
+        "3": "Высокий"
+    }
+
+    if choice not in priorities:
+        show_error("Неверный выбор приоритета.")
+        return
+
+    tasks[number - 1]["priority"] = priorities[choice]
+
+    save_tasks()
+    show_success("Приоритет задачи изменён!")
+
 def tasks_menu():
     while True:
         show_title("МОИ ЗАДАЧИ")
@@ -276,6 +320,7 @@ def tasks_menu():
         print("5. Фильтр задач")
         print("6. Изменить дедлайн")
         print("7. Изменить название задачи")
+        print("8. Изменить приоритет задачи")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -300,6 +345,9 @@ def tasks_menu():
 
         elif choice == "7":
             change_task_title()
+
+        elif choice == "8":
+            change_task_priority()
 
         elif choice == "0":
             break
