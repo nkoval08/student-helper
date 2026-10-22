@@ -99,6 +99,43 @@ def show_tasks():
         print(f"   Приоритет: {priority}")
         print(f"   Статус: {status}")
 
+def search_tasks():
+    if not tasks:
+        show_warning("Задач пока нет.")
+        return
+
+    search_text = input(
+        "Введите название задачи или его часть: "
+    ).strip().lower()
+
+    if not search_text:
+        show_error("Поисковый запрос не может быть пустым.")
+        return
+
+    found_tasks = []
+
+    for task in tasks:
+        if search_text in task["title"].lower():
+            found_tasks.append(task)
+
+    if not found_tasks:
+        show_warning("Задачи по вашему запросу не найдены.")
+        return
+
+    show_title("РЕЗУЛЬТАТЫ ПОИСКА")
+
+    for number, task in enumerate(found_tasks, start=1):
+        status = (
+            "Выполнена"
+            if task["completed"]
+            else "Не выполнена"
+        )
+
+        print(f"\n{number}. {task['title']}")
+        print(f"   Дедлайн: {task['deadline']}")
+        print(f"   Приоритет: {task.get('priority', 'Средний')}")
+        print(f"   Статус: {status}")
+
 def filter_tasks():
     if not tasks:
         show_warning("Задач пока нет.")
@@ -321,6 +358,7 @@ def tasks_menu():
         print("6. Изменить дедлайн")
         print("7. Изменить название задачи")
         print("8. Изменить приоритет задачи")
+        print("9. Найти задачу")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -348,6 +386,9 @@ def tasks_menu():
 
         elif choice == "8":
             change_task_priority()
+
+        elif choice == "9":
+            search_tasks()
 
         elif choice == "0":
             break
