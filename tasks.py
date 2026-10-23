@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from datetime import datetime
 
 from interface import show_title, show_success, show_error, show_warning
 
@@ -66,25 +67,26 @@ def add_task():
 
 
 
+
 def show_tasks():
     if not tasks:
         show_warning("Задач пока нет.")
         return
 
-    show_title("МОИ ЗАДАЧИ")
+    def get_deadline(task):
+        deadline = task.get("deadline", "")
 
-    priority_order = {
-        "Высокий": 1,
-        "Средний": 2,
-        "Низкий": 3
-    }
+        try:
+            date = datetime.strptime(deadline, "%d.%m.%Y")
+            return (0, date)
+        except ValueError:
+            # Если дата введена неправильно,
+            # такую задачу покажем в конце списка.
+            return (1, datetime.max)
 
-    sorted_tasks = sorted(
-        tasks,
-        key=lambda task: priority_order.get(
-            task.get("priority", "Средний"), 2
-        )
-    )
+    sorted_tasks = sorted(tasks, key=get_deadline)
+
+    show_title("МОИ ЗАДАЧИ — ПО ДЕДЛАЙНУ")
 
     for number, task in enumerate(sorted_tasks, start=1):
         if task["completed"]:
@@ -98,6 +100,7 @@ def show_tasks():
         print(f"   Дедлайн: {task['deadline']}")
         print(f"   Приоритет: {priority}")
         print(f"   Статус: {status}")
+
 
 def search_tasks():
     if not tasks:
