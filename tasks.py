@@ -21,6 +21,7 @@ def save_tasks():
         json.dump(tasks, file, ensure_ascii=False, indent=4)
 
 
+
 def add_task():
     title = input("Введите название задачи: ").strip()
 
@@ -32,8 +33,13 @@ def add_task():
         "Введите дедлайн (например, 28.10.2026): "
     ).strip()
 
-    if not deadline:
-        show_error("Дедлайн не может быть пустым.")
+    try:
+        datetime.strptime(deadline, "%d.%m.%Y")
+    except ValueError:
+        show_error(
+            "Неверная дата. Используйте формат ДД.ММ.ГГГГ "
+            "и укажите существующую дату."
+        )
         return
 
     print("\nВыберите приоритет:")
@@ -64,8 +70,6 @@ def add_task():
     save_tasks()
 
     show_success(f'Задача "{title}" добавлена!')
-
-
 
 
 def show_tasks():
