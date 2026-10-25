@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
-from datetime import datetime
+
+from datetime import datetime, date
+
 
 from interface import show_title, show_success, show_error, show_warning
 
@@ -142,6 +144,40 @@ def search_tasks():
         print(f"   Дедлайн: {task['deadline']}")
         print(f"   Приоритет: {task.get('priority', 'Средний')}")
         print(f"   Статус: {status}")
+
+def show_overdue_tasks():
+    today = date.today()
+    overdue_tasks = []
+
+    for task in tasks:
+        if task["completed"]:
+            continue
+
+        try:
+            deadline = datetime.strptime(
+                task["deadline"], "%d.%m.%Y"
+            ).date()
+
+            if deadline < today:
+                overdue_tasks.append(task)
+
+        except ValueError:
+            continue
+
+    if not overdue_tasks:
+        show_success("Просроченных задач нет!")
+        return
+
+    show_title("ПРОСРОЧЕННЫЕ ЗАДАЧИ")
+
+    for number, task in enumerate(overdue_tasks, start=1):
+        print(f"\n{number}. {task['title']}")
+        print(f"   Дедлайн: {task['deadline']}")
+        print(
+            f"   Приоритет: "
+            f"{task.get('priority', 'Средний')}"
+        )
+        print("   Статус: ❌ Не выполнена")
 
 def filter_tasks():
     if not tasks:
@@ -366,6 +402,7 @@ def tasks_menu():
         print("7. Изменить название задачи")
         print("8. Изменить приоритет задачи")
         print("9. Найти задачу")
+        print("10. Показать просроченные задачи")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -397,6 +434,9 @@ def tasks_menu():
         elif choice == "9":
             search_tasks()
 
+        elif choice == "10":
+            show_overdue_tasks()
+        
         elif choice == "0":
             break
 
