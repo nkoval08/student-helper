@@ -87,6 +87,37 @@ def show_schedule():
             for lesson in lessons:
                 print(f"  {lesson['time']} — {lesson['subject']}")
 
+def show_schedule_by_day():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    day = input(
+        "Введите день недели (например, Понедельник): "
+    ).strip().lower()
+
+    if not day:
+        show_error("День недели не может быть пустым.")
+        return
+
+    found_lessons = []
+
+    for lesson in schedule:
+        lesson_day = lesson.get("day", "").strip().lower()
+
+        if lesson_day == day:
+            found_lessons.append(lesson)
+
+    if not found_lessons:
+        show_warning("На этот день занятий нет.")
+        return
+
+    show_title(f"РАСПИСАНИЕ: {day.upper()}")
+
+    for number, lesson in enumerate(found_lessons, start=1):
+        print(f"\n{number}. {lesson['subject']}")
+        print(f"   Время: {lesson['time']}")
+
 
 def delete_lesson():
     if not schedule:
@@ -128,6 +159,7 @@ def schedule_menu():
         print("1. Добавить занятие")
         print("2. Показать расписание")
         print("3. Удалить занятие")
+        print("4. Расписание по дням недели")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -141,6 +173,8 @@ def schedule_menu():
         elif choice == "3":
             delete_lesson()
 
+        elif choice == "4":
+            show_schedule_by_day()
         elif choice == "0":
             break
 
