@@ -1,8 +1,14 @@
+
 import json
 from pathlib import Path
+from datetime import datetime
 
-from interface import show_title, show_success, show_error, show_warning
-
+from interface import (
+    show_title,
+    show_success,
+    show_error,
+    show_warning
+)
 
 DATA_FILE = Path(__file__).resolve().parent / "data" / "schedule.json"
 
@@ -25,19 +31,40 @@ def save_schedule():
 
 
 def add_lesson():
-    day = input("Введите день недели: ")
+    show_title("ДОБАВЛЕНИЕ ЗАНЯТИЯ")
 
-    if not day:
-        show_error("День недели не может быть пустым.")
+    day = input(
+        "Введите день недели (например, Понедельник): "
+    ).strip().capitalize()
+
+    valid_days = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    if day not in valid_days:
+        show_error("Такого дня недели нет.")
         return
 
-    time = input("Введите время занятия (например, 09:00): ")
+    time = input(
+        "Введите время занятия (например, 08:30): "
+    ).strip()
 
-    if not time:
-        show_error("Время не может быть пустым.")
+    try:
+        datetime.strptime(time, "%H:%M")
+    except ValueError:
+        show_error(
+            "Неверное время. Используйте формат ЧЧ:ММ, "
+            "например 08:30."
+        )
         return
 
-    subject = input("Введите название предмета: ")
+    subject = input("Введите название предмета: ").strip()
 
     if not subject:
         show_error("Название предмета не может быть пустым.")
@@ -52,7 +79,7 @@ def add_lesson():
     schedule.append(lesson)
     save_schedule()
 
-    show_success(f'Занятие "{subject}" добавлено!')
+    show_success("Занятие успешно добавлено!")
 
 
 def show_schedule():
@@ -60,9 +87,7 @@ def show_schedule():
         show_warning("Расписание пока пустое.")
         return
 
-    show_title("РАСПИСАНИЕ")
-
-    days = [
+    weekdays = [
         "Понедельник",
         "Вторник",
         "Среда",
@@ -72,20 +97,25 @@ def show_schedule():
         "Воскресенье"
     ]
 
-    for day in days:
+    show_title("МОЁ РАСПИСАНИЕ")
+
+    for day in weekdays:
         lessons = [
-            lesson
-            for lesson in schedule
-            if lesson["day"].lower() == day.lower()
+            lesson for lesson in schedule
+            if lesson.get("day", "").lower() == day.lower()
         ]
 
         if lessons:
-            print(f"\n{day}:")
+            print(f"\n📅 {day.upper()}")
 
             lessons.sort(key=lambda lesson: lesson["time"])
 
             for lesson in lessons:
-                print(f"  {lesson['time']} — {lesson['subject']}")
+                print(
+                    f"  {lesson['time']} — "
+                    f"{lesson['subject']}"
+                )
+
 
 def show_schedule_by_day():
     if not schedule:
@@ -100,23 +130,21 @@ def show_schedule_by_day():
         show_error("День недели не может быть пустым.")
         return
 
-    found_lessons = []
-
-    for lesson in schedule:
-        lesson_day = lesson.get("day", "").strip().lower()
-
-        if lesson_day == day:
-            found_lessons.append(lesson)
+    found_lessons = [
+        lesson for lesson in schedule
+        if lesson.get("day", "").lower() == day
+    ]
 
     if not found_lessons:
         show_warning("На этот день занятий нет.")
         return
 
+    found_lessons.sort(key=lambda lesson: lesson["time"])
+
     show_title(f"РАСПИСАНИЕ: {day.upper()}")
 
     for number, lesson in enumerate(found_lessons, start=1):
-        print(f"\n{number}. {lesson['subject']}")
-        print(f"   Время: {lesson['time']}")
+        print(f"{number}. {lesson['time']} — {lesson['subject']}")
 
 
 def delete_lesson():
@@ -124,37 +152,46 @@ def delete_lesson():
         show_warning("Расписание пока пустое.")
         return
 
-    print("\nВсе занятия:")
-
-    for number, lesson in enumerate(schedule, start=1):
-        print(
-            f"{number}. "
-            f"{lesson['day']} — "
-            f"{lesson['time']} — "
-            f"{lesson['subject']}"
-        )
+    show_schedule()
 
     try:
-        number = int(input("\nВведите номер занятия для удаления: "))
+        day = input(
+            "\nВведите день недели удаляемого занятия: "
+        ).strip().lower()
 
-        if 1 <= number <= len(schedule):
-            deleted_lesson = schedule.pop(number - 1)
-            save_schedule()
+        day_lessons = [
+            lesson for lesson in schedule
+            if lesson.get("day", "").lower() == day
+        ]
 
-            show_success(
-                f'Занятие "{deleted_lesson["subject"]}" удалено!'
-            )
+        if not day_lessons:
+            show_warning("На этот день занятий нет.")
+            return
 
-        else:
+        day_lessons.sort(key=lambda lesson: lesson["time"])
+
+        for number, lesson in enumerate(day_lessons, start=1):
+            print(f"{number}. {lesson['time']} — {lesson['subject']}")
+
+        number = int(input("Введите номер занятия для удаления: "))
+
+        if number < 1 or number > len(day_lessons):
             show_error("Такого номера нет.")
+            return
+
+        lesson_to_delete = day_lessons[number - 1]
+        schedule.remove(lesson_to_delete)
+        save_schedule()
+
+        show_success("Занятие удалено!")
 
     except ValueError:
-        show_error("Введите число.")
+        show_error("Введите номер цифрами.")
 
 
 def schedule_menu():
     while True:
-        show_title("РАСПИСАНИЕ")
+        show_title("МОЁ РАСПИСАНИЕ")
 
         print("1. Добавить занятие")
         print("2. Показать расписание")
@@ -166,17 +203,13 @@ def schedule_menu():
 
         if choice == "1":
             add_lesson()
-
         elif choice == "2":
             show_schedule()
-
         elif choice == "3":
             delete_lesson()
-
         elif choice == "4":
             show_schedule_by_day()
         elif choice == "0":
             break
-
         else:
             show_error("Такого пункта нет.")
