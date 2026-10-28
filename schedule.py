@@ -69,6 +69,17 @@ def add_lesson():
     if not subject:
         show_error("Название предмета не может быть пустым.")
         return
+    
+    for lesson in schedule:
+        if (
+            lesson["day"] == day
+            and lesson["time"] == time
+        ):
+            show_error(
+                "На этот день и время занятие уже добавлено."
+            )
+            return
+
 
     lesson = {
         "day": day,
