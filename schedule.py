@@ -200,6 +200,111 @@ def delete_lesson():
         show_error("Введите номер цифрами.")
 
 
+def change_lesson_time():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ИЗМЕНЕНИЕ ВРЕМЕНИ ЗАНЯТИЯ")
+
+    for number, lesson in enumerate(schedule, start=1):
+        print(
+            f"{number}. {lesson['day']} — "
+            f"{lesson['time']} — {lesson['subject']}"
+        )
+
+    try:
+        number = int(input("\nВведите номер занятия: "))
+
+        if number < 1 or number > len(schedule):
+            show_error("Такого номера нет.")
+            return
+
+    except ValueError:
+        show_error("Введите номер цифрами.")
+        return
+
+    lesson = schedule[number - 1]
+
+    new_time = input(
+        "Введите новое время (например, 09:30): "
+    ).strip()
+
+    try:
+        datetime.strptime(new_time, "%H:%M")
+    except ValueError:
+        show_error("Неверное время. Используйте формат ЧЧ:ММ.")
+        return
+
+    for other_lesson in schedule:
+        if (
+            other_lesson is not lesson
+            and other_lesson["day"] == lesson["day"]
+            and other_lesson["time"] == new_time
+        ):
+            show_error(
+                "На этот день и время занятие уже добавлено."
+            )
+            return
+
+    lesson["time"] = new_time
+
+    save_schedule()
+    show_success("Время занятия изменено!")
+
+def change_lesson_time():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ИЗМЕНЕНИЕ ВРЕМЕНИ ЗАНЯТИЯ")
+
+    for number, lesson in enumerate(schedule, start=1):
+        print(
+            f"{number}. {lesson['day']} — "
+            f"{lesson['time']} — {lesson['subject']}"
+        )
+
+    try:
+        number = int(input("\nВведите номер занятия: "))
+
+        if number < 1 or number > len(schedule):
+            show_error("Такого номера нет.")
+            return
+
+    except ValueError:
+        show_error("Введите номер цифрами.")
+        return
+
+    lesson = schedule[number - 1]
+
+    new_time = input(
+        "Введите новое время (например, 09:30): "
+    ).strip()
+
+    try:
+        datetime.strptime(new_time, "%H:%M")
+    except ValueError:
+        show_error("Неверное время. Используйте формат ЧЧ:ММ.")
+        return
+
+    for other_lesson in schedule:
+        if (
+            other_lesson is not lesson
+            and other_lesson["day"] == lesson["day"]
+            and other_lesson["time"] == new_time
+        ):
+            show_error(
+                "На этот день и время занятие уже добавлено."
+            )
+            return
+
+    lesson["time"] = new_time
+
+    save_schedule()
+    show_success("Время занятия изменено!")
+
+
 def schedule_menu():
     while True:
         show_title("МОЁ РАСПИСАНИЕ")
@@ -208,6 +313,7 @@ def schedule_menu():
         print("2. Показать расписание")
         print("3. Удалить занятие")
         print("4. Расписание по дням недели")
+        print("5. Изменить время занятия")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -220,6 +326,8 @@ def schedule_menu():
             delete_lesson()
         elif choice == "4":
             show_schedule_by_day()
+        elif choice == "5":
+            change_lesson_time()
         elif choice == "0":
             break
         else:
