@@ -304,6 +304,42 @@ def change_lesson_time():
     save_schedule()
     show_success("Время занятия изменено!")
 
+def change_lesson_subject():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ИЗМЕНЕНИЕ ПРЕДМЕТА")
+
+    for number, lesson in enumerate(schedule, start=1):
+        print(
+            f"{number}. {lesson['day']} — "
+            f"{lesson['time']} — {lesson['subject']}"
+        )
+
+    try:
+        number = int(input("\nВведите номер занятия: "))
+
+        if number < 1 or number > len(schedule):
+            show_error("Такого номера нет.")
+            return
+
+    except ValueError:
+        show_error("Введите номер цифрами.")
+        return
+
+    new_subject = input(
+        "Введите новое название предмета: "
+    ).strip()
+
+    if not new_subject:
+        show_error("Название предмета не может быть пустым.")
+        return
+
+    schedule[number - 1]["subject"] = new_subject
+
+    save_schedule()
+    show_success("Название предмета успешно изменено!")
 
 def schedule_menu():
     while True:
@@ -314,6 +350,7 @@ def schedule_menu():
         print("3. Удалить занятие")
         print("4. Расписание по дням недели")
         print("5. Изменить время занятия")
+        print("6. Изменить название предмета")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -328,6 +365,8 @@ def schedule_menu():
             show_schedule_by_day()
         elif choice == "5":
             change_lesson_time()
+        elif choice == "6":
+            change_lesson_subject()
         elif choice == "0":
             break
         else:
