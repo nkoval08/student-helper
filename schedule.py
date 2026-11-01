@@ -199,6 +199,55 @@ def delete_lesson():
     except ValueError:
         show_error("Введите номер цифрами.")
 
+def delete_day_schedule():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ОЧИСТКА РАСПИСАНИЯ ЗА ДЕНЬ")
+
+    day = input(
+        "Введите день недели: "
+    ).strip().capitalize()
+
+    valid_days = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    if day not in valid_days:
+        show_error("Такого дня недели нет.")
+        return
+
+    day_lessons = [
+        lesson for lesson in schedule
+        if lesson["day"] == day
+    ]
+
+    if not day_lessons:
+        show_warning("На этот день занятий нет.")
+        return
+
+    print(f"\nНайдено занятий: {len(day_lessons)}")
+
+    confirm = input(
+        "Вы действительно хотите удалить все занятия? (да/нет): "
+    ).strip().lower()
+
+    if confirm != "да":
+        show_warning("Удаление отменено.")
+        return
+
+    for lesson in day_lessons:
+        schedule.remove(lesson)
+
+    save_schedule()
+    show_success("Все занятия за выбранный день удалены!")
 
 def change_lesson_time():
     if not schedule:
@@ -351,6 +400,7 @@ def schedule_menu():
         print("4. Расписание по дням недели")
         print("5. Изменить время занятия")
         print("6. Изменить название предмета")
+        print("7. Очистить расписание за день")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -367,6 +417,8 @@ def schedule_menu():
             change_lesson_time()
         elif choice == "6":
             change_lesson_subject()
+        elif choice == "7":
+            delete_day_schedule()
         elif choice == "0":
             break
         else:
