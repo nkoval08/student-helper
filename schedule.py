@@ -248,6 +248,94 @@ def delete_day_schedule():
 
     save_schedule()
     show_success("Все занятия за выбранный день удалены!")
+    
+def search_lessons():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ПОИСК ЗАНЯТИЙ")
+
+    search = input(
+        "Введите название предмета для поиска: "
+    ).strip().lower()
+
+    if not search:
+        show_error("Введите название предмета.")
+        return
+
+    found_lessons = [
+        lesson for lesson in schedule
+        if search in lesson["subject"].lower()
+    ]
+
+    if not found_lessons:
+        show_warning("Занятия по этому предмету не найдены.")
+        return
+
+    found_lessons.sort(
+        key=lambda lesson: (
+            [
+                "Понедельник", "Вторник", "Среда",
+                "Четверг", "Пятница", "Суббота", "Воскресенье"
+            ].index(lesson["day"]),
+            lesson["time"]
+        )
+    )
+
+    show_title("РЕЗУЛЬТАТЫ ПОИСКА")
+
+    for number, lesson in enumerate(found_lessons, start=1):
+        print(
+            f"{number}. {lesson['day']} — "
+            f"{lesson['time']} — {lesson['subject']}"
+        )
+
+    print(f"\nВсего найдено занятий: {len(found_lessons)}")
+
+def search_lessons():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ПОИСК ЗАНЯТИЙ")
+
+    search = input(
+        "Введите название предмета для поиска: "
+    ).strip().lower()
+
+    if not search:
+        show_error("Введите название предмета.")
+        return
+
+    found_lessons = [
+        lesson for lesson in schedule
+        if search in lesson["subject"].lower()
+    ]
+
+    if not found_lessons:
+        show_warning("Занятия по этому предмету не найдены.")
+        return
+
+    found_lessons.sort(
+        key=lambda lesson: (
+            [
+                "Понедельник", "Вторник", "Среда",
+                "Четверг", "Пятница", "Суббота", "Воскресенье"
+            ].index(lesson["day"]),
+            lesson["time"]
+        )
+    )
+
+    show_title("РЕЗУЛЬТАТЫ ПОИСКА")
+
+    for number, lesson in enumerate(found_lessons, start=1):
+        print(
+            f"{number}. {lesson['day']} — "
+            f"{lesson['time']} — {lesson['subject']}"
+        )
+
+    print(f"\nВсего найдено занятий: {len(found_lessons)}")
 
 def change_lesson_time():
     if not schedule:
@@ -401,6 +489,7 @@ def schedule_menu():
         print("5. Изменить время занятия")
         print("6. Изменить название предмета")
         print("7. Очистить расписание за день")
+        print("8. Найти занятие по предмету")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -419,6 +508,8 @@ def schedule_menu():
             change_lesson_subject()
         elif choice == "7":
             delete_day_schedule()
+        elif choice == "8":
+            search_lessons()
         elif choice == "0":
             break
         else:
