@@ -337,6 +337,42 @@ def search_lessons():
 
     print(f"\nВсего найдено занятий: {len(found_lessons)}")
 
+
+def count_lessons_by_day():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("КОЛИЧЕСТВО ЗАНЯТИЙ")
+
+    weekdays = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    total = 0
+
+    for day in weekdays:
+        count = 0
+
+        for lesson in schedule:
+            lesson_day = lesson.get("day", "").strip().lower()
+
+            if lesson_day == day.lower():
+                count += 1
+
+        print(f"{day}: {count} занятий")
+
+        total += count
+
+    print("-" * 30)
+    print(f"Всего занятий за неделю: {total}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -478,6 +514,7 @@ def change_lesson_subject():
     save_schedule()
     show_success("Название предмета успешно изменено!")
 
+
 def schedule_menu():
     while True:
         show_title("МОЁ РАСПИСАНИЕ")
@@ -490,6 +527,7 @@ def schedule_menu():
         print("6. Изменить название предмета")
         print("7. Очистить расписание за день")
         print("8. Найти занятие по предмету")
+        print("9. Количество занятий по дням недели")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -510,6 +548,8 @@ def schedule_menu():
             delete_day_schedule()
         elif choice == "8":
             search_lessons()
+        elif choice == "9":
+            count_lessons_by_day()
         elif choice == "0":
             break
         else:
