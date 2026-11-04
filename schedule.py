@@ -373,6 +373,47 @@ def count_lessons_by_day():
     print("-" * 30)
     print(f"Всего занятий за неделю: {total}")
 
+def show_today_schedule():
+    from datetime import date
+
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    weekdays = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    today = weekdays[date.today().weekday()]
+
+    today_lessons = [
+        lesson for lesson in schedule
+        if lesson.get("day", "").strip().lower() == today.lower()
+    ]
+
+    show_title(f"РАСПИСАНИЕ НА СЕГОДНЯ: {today.upper()}")
+
+    if not today_lessons:
+        show_warning("На сегодня занятий нет.")
+        return
+
+    today_lessons.sort(key=lambda lesson: lesson["time"])
+
+    for number, lesson in enumerate(today_lessons, start=1):
+        print(
+            f"{number}. {lesson['time']} — "
+            f"{lesson['subject']}"
+        )
+
+    print("-" * 30)
+    print(f"Всего занятий сегодня: {len(today_lessons)}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -528,6 +569,7 @@ def schedule_menu():
         print("7. Очистить расписание за день")
         print("8. Найти занятие по предмету")
         print("9. Количество занятий по дням недели")
+        print("10. Расписание на сегодня")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -550,6 +592,8 @@ def schedule_menu():
             search_lessons()
         elif choice == "9":
             count_lessons_by_day()
+        elif choice == "10":
+            show_today_schedule()
         elif choice == "0":
             break
         else:
