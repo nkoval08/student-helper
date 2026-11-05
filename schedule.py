@@ -414,6 +414,63 @@ def show_today_schedule():
     print("-" * 30)
     print(f"Всего занятий сегодня: {len(today_lessons)}")
 
+def show_free_time():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    weekdays = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    day = input(
+        "Введите день недели: "
+    ).strip().capitalize()
+
+    if day not in weekdays:
+        show_error("Такого дня недели нет.")
+        return
+
+    lessons = [
+        lesson for lesson in schedule
+        if lesson.get("day", "").strip().lower() == day.lower()
+    ]
+
+    if len(lessons) < 2:
+        show_warning(
+            "Для расчёта свободного времени нужно минимум 2 занятия."
+        )
+        return
+
+    lessons.sort(key=lambda lesson: lesson["time"])
+
+    show_title(f"СВОБОДНОЕ ВРЕМЯ: {day.upper()}")
+
+    for i in range(len(lessons) - 1):
+        first_time = datetime.strptime(
+            lessons[i]["time"], "%H:%M"
+        )
+
+        second_time = datetime.strptime(
+            lessons[i + 1]["time"], "%H:%M"
+        )
+
+        difference = second_time - first_time
+
+        minutes = difference.total_seconds() // 60
+
+        print(
+            f"После {lessons[i]['subject']} "
+            f"до {lessons[i + 1]['subject']}: "
+            f"{int(minutes)} минут"
+        )
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -570,6 +627,7 @@ def schedule_menu():
         print("8. Найти занятие по предмету")
         print("9. Количество занятий по дням недели")
         print("10. Расписание на сегодня")
+        print("11. Свободное время между занятиями")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -594,6 +652,8 @@ def schedule_menu():
             count_lessons_by_day()
         elif choice == "10":
             show_today_schedule()
+        elif choice == "11":
+            show_free_time()
         elif choice == "0":
             break
         else:
