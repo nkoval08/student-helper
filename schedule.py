@@ -471,6 +471,48 @@ def show_free_time():
             f"{int(minutes)} минут"
         )
 
+def show_next_lesson():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    weekdays = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    day = input(
+        "Введите день недели: "
+    ).strip().capitalize()
+
+    if day not in weekdays:
+        show_error("Такого дня недели нет.")
+        return
+
+    lessons = [
+        lesson for lesson in schedule
+        if lesson.get("day", "").strip().lower() == day.lower()
+    ]
+
+    if not lessons:
+        show_warning("На этот день занятий нет.")
+        return
+
+    lessons.sort(key=lambda lesson: lesson["time"])
+
+    next_lesson = lessons[0]
+
+    show_title("БЛИЖАЙШЕЕ ЗАНЯТИЕ")
+
+    print(f"День: {next_lesson['day']}")
+    print(f"Время: {next_lesson['time']}")
+    print(f"Предмет: {next_lesson['subject']}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -628,6 +670,7 @@ def schedule_menu():
         print("9. Количество занятий по дням недели")
         print("10. Расписание на сегодня")
         print("11. Свободное время между занятиями")
+        print("12. Ближайшее занятие")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -654,6 +697,8 @@ def schedule_menu():
             show_today_schedule()
         elif choice == "11":
             show_free_time()
+        elif choice == "12":
+            show_next_lesson()
         elif choice == "0":
             break
         else:
