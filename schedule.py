@@ -513,6 +513,80 @@ def show_next_lesson():
     print(f"Время: {next_lesson['time']}")
     print(f"Предмет: {next_lesson['subject']}")
 
+def search_lessons_by_time():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ПОИСК ЗАНЯТИЙ ПО ВРЕМЕНИ")
+
+    search_time = input(
+        "Введите время занятия (например, 10:00): "
+    ).strip()
+
+    try:
+        datetime.strptime(search_time, "%H:%M")
+    except ValueError:
+        show_error("Неверное время. Используйте формат ЧЧ:ММ.")
+        return
+
+    found_lessons = [
+        lesson for lesson in schedule
+        if lesson.get("time", "").strip() == search_time
+    ]
+
+    if not found_lessons:
+        show_warning("Занятий на это время нет.")
+        return
+
+    show_title("НАЙДЕННЫЕ ЗАНЯТИЯ")
+
+    for number, lesson in enumerate(found_lessons, start=1):
+        print(
+            f"{number}. {lesson['day']} — "
+            f"{lesson['time']} — {lesson['subject']}"
+        )
+
+    print("-" * 30)
+    print(f"Всего найдено занятий: {len(found_lessons)}")
+
+def search_lessons_by_time():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ПОИСК ЗАНЯТИЙ ПО ВРЕМЕНИ")
+
+    search_time = input(
+        "Введите время занятия (например, 10:00): "
+    ).strip()
+
+    try:
+        datetime.strptime(search_time, "%H:%M")
+    except ValueError:
+        show_error("Неверное время. Используйте формат ЧЧ:ММ.")
+        return
+
+    found_lessons = [
+        lesson for lesson in schedule
+        if lesson.get("time", "").strip() == search_time
+    ]
+
+    if not found_lessons:
+        show_warning("Занятий на это время нет.")
+        return
+
+    show_title("НАЙДЕННЫЕ ЗАНЯТИЯ")
+
+    for number, lesson in enumerate(found_lessons, start=1):
+        print(
+            f"{number}. {lesson['day']} — "
+            f"{lesson['time']} — {lesson['subject']}"
+        )
+
+    print("-" * 30)
+    print(f"Всего найдено занятий: {len(found_lessons)}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -671,6 +745,7 @@ def schedule_menu():
         print("10. Расписание на сегодня")
         print("11. Свободное время между занятиями")
         print("12. Ближайшее занятие")
+        print("13. Найти занятия по времени")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -699,6 +774,8 @@ def schedule_menu():
             show_free_time()
         elif choice == "12":
             show_next_lesson()
+        elif choice == "13":
+            search_lessons_by_time()
         elif choice == "0":
             break
         else:
