@@ -550,42 +550,66 @@ def search_lessons_by_time():
     print("-" * 30)
     print(f"Всего найдено занятий: {len(found_lessons)}")
 
-def search_lessons_by_time():
+def change_lesson_day():
     if not schedule:
         show_warning("Расписание пока пустое.")
         return
 
-    show_title("ПОИСК ЗАНЯТИЙ ПО ВРЕМЕНИ")
+    show_title("ИЗМЕНЕНИЕ ДНЯ ЗАНЯТИЯ")
 
-    search_time = input(
-        "Введите время занятия (например, 10:00): "
-    ).strip()
-
-    try:
-        datetime.strptime(search_time, "%H:%M")
-    except ValueError:
-        show_error("Неверное время. Используйте формат ЧЧ:ММ.")
-        return
-
-    found_lessons = [
-        lesson for lesson in schedule
-        if lesson.get("time", "").strip() == search_time
-    ]
-
-    if not found_lessons:
-        show_warning("Занятий на это время нет.")
-        return
-
-    show_title("НАЙДЕННЫЕ ЗАНЯТИЯ")
-
-    for number, lesson in enumerate(found_lessons, start=1):
+    for number, lesson in enumerate(schedule, start=1):
         print(
             f"{number}. {lesson['day']} — "
             f"{lesson['time']} — {lesson['subject']}"
         )
 
-    print("-" * 30)
-    print(f"Всего найдено занятий: {len(found_lessons)}")
+    try:
+        number = int(input("\nВведите номер занятия: "))
+
+        if number < 1 or number > len(schedule):
+            show_error("Такого номера нет.")
+            return
+
+    except ValueError:
+        show_error("Введите номер цифрами.")
+        return
+
+    lesson = schedule[number - 1]
+
+    valid_days = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    new_day = input(
+        "Введите новый день недели: "
+    ).strip().capitalize()
+
+    if new_day not in valid_days:
+        show_error("Такого дня недели нет.")
+        return
+
+    for other_lesson in schedule:
+        if (
+            other_lesson is not lesson
+            and other_lesson["day"] == new_day
+            and other_lesson["time"] == lesson["time"]
+        ):
+            show_error(
+                "На этот день и время занятие уже добавлено."
+            )
+            return
+
+    lesson["day"] = new_day
+
+    save_schedule()
+
+    show_success("День занятия успешно изменён!")
 
 def change_lesson_time():
     if not schedule:
@@ -746,6 +770,7 @@ def schedule_menu():
         print("11. Свободное время между занятиями")
         print("12. Ближайшее занятие")
         print("13. Найти занятия по времени")
+        print("14. Изменить день занятия")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -776,6 +801,8 @@ def schedule_menu():
             show_next_lesson()
         elif choice == "13":
             search_lessons_by_time()
+        elif choice == "14":
+            change_lesson_day()
         elif choice == "0":
             break
         else:
