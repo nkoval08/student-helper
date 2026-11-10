@@ -611,6 +611,38 @@ def change_lesson_day():
 
     show_success("День занятия успешно изменён!")
 
+def count_lessons_by_subject():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("СТАТИСТИКА ПО ПРЕДМЕТАМ")
+
+    subjects = {}
+
+    for lesson in schedule:
+        subject = lesson.get("subject", "").strip()
+
+        if subject:
+            if subject not in subjects:
+                subjects[subject] = 0
+
+            subjects[subject] += 1
+
+    if not subjects:
+        show_warning("Предметы не найдены.")
+        return
+
+    for subject, count in sorted(subjects.items()):
+        print(f"{subject}: {count} занятий")
+
+    print("-" * 30)
+
+    total = sum(subjects.values())
+
+    print(f"Всего занятий: {total}")
+    print(f"Всего предметов: {len(subjects)}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -771,6 +803,7 @@ def schedule_menu():
         print("12. Ближайшее занятие")
         print("13. Найти занятия по времени")
         print("14. Изменить день занятия")
+        print("15. Статистика по предметам")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -803,6 +836,8 @@ def schedule_menu():
             search_lessons_by_time()
         elif choice == "14":
             change_lesson_day()
+        elif choice == "15":
+            count_lessons_by_subject()
         elif choice == "0":
             break
         else:
