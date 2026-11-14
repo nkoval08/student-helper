@@ -643,6 +643,50 @@ def count_lessons_by_subject():
     print(f"Всего занятий: {total}")
     print(f"Всего предметов: {len(subjects)}")
 
+def export_schedule():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    weekdays = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    lines = []
+    lines.append("МОЁ УЧЕБНОЕ РАСПИСАНИЕ")
+    lines.append("=" * 35)
+
+    for day in weekdays:
+        lessons = [
+            lesson for lesson in schedule
+            if lesson.get("day", "").strip().lower() == day.lower()
+        ]
+
+        if lessons:
+            lessons.sort(key=lambda lesson: lesson["time"])
+
+            lines.append("")
+            lines.append(day.upper())
+
+            for lesson in lessons:
+                lines.append(
+                    f"{lesson['time']} — {lesson['subject']}"
+                )
+
+    file_path = Path(__file__).resolve().parent / "my_schedule.txt"
+
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write("\n".join(lines))
+
+    show_success("Расписание успешно сохранено!")
+    print(f"Файл находится здесь: {file_path}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -804,6 +848,7 @@ def schedule_menu():
         print("13. Найти занятия по времени")
         print("14. Изменить день занятия")
         print("15. Статистика по предметам")
+        print("16. Сохранить расписание в TXT")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -838,6 +883,8 @@ def schedule_menu():
             change_lesson_day()
         elif choice == "15":
             count_lessons_by_subject()
+        elif choice == "16":
+            export_schedule()
         elif choice == "0":
             break
         else:
