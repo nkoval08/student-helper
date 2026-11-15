@@ -687,6 +687,80 @@ def export_schedule():
     show_success("Расписание успешно сохранено!")
     print(f"Файл находится здесь: {file_path}")
 
+def import_schedule():
+    file_path = Path(__file__).resolve().parent / "import_schedule.txt"
+
+    if not file_path.exists():
+        show_warning("Файл import_schedule.txt не найден.")
+        return
+
+    weekdays = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    imported_count = 0
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            lines = file.readlines()
+
+        for line in lines:
+            line = line.strip()
+
+            if not line or "—" not in line:
+                continue
+
+            try:
+                day, lesson_info = line.split(";", 1)
+                time, subject = lesson_info.split("—", 1)
+
+                day = day.strip().capitalize()
+                time = time.strip()
+                subject = subject.strip()
+
+                if day not in weekdays or not subject:
+                    continue
+
+                datetime.strptime(time, "%H:%M")
+
+                duplicate = False
+
+                for lesson in schedule:
+                    if (
+                        lesson["day"] == day
+                        and lesson["time"] == time
+                    ):
+                        duplicate = True
+                        break
+
+                if duplicate:
+                    continue
+
+                schedule.append({
+                    "day": day,
+                    "time": time,
+                    "subject": subject
+                })
+
+                imported_count += 1
+
+            except ValueError:
+                continue
+
+        save_schedule()
+        show_success(
+            f"Импортировано занятий: {imported_count}"
+        )
+
+    except OSError:
+        show_error("Не удалось прочитать файл.")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -849,6 +923,7 @@ def schedule_menu():
         print("14. Изменить день занятия")
         print("15. Статистика по предметам")
         print("16. Сохранить расписание в TXT")
+        print("17. Импортировать расписание из TXT")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -885,6 +960,8 @@ def schedule_menu():
             count_lessons_by_subject()
         elif choice == "16":
             export_schedule()
+        elif choice == "17":
+            import_schedule()
         elif choice == "0":
             break
         else:
