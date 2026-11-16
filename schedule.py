@@ -761,6 +761,45 @@ def import_schedule():
     except OSError:
         show_error("Не удалось прочитать файл.")
 
+def show_schedule_table():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    weekdays = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    show_title("РАСПИСАНИЕ В ВИДЕ ТАБЛИЦЫ")
+
+    print("-" * 60)
+    print(f"{'ДЕНЬ':<18} {'ВРЕМЯ':<12} {'ПРЕДМЕТ'}")
+    print("-" * 60)
+
+    for day in weekdays:
+        lessons = [
+            lesson for lesson in schedule
+            if lesson.get("day", "").strip().lower() == day.lower()
+        ]
+
+        lessons.sort(key=lambda lesson: lesson["time"])
+
+        for lesson in lessons:
+            print(
+                f"{day:<18} "
+                f"{lesson['time']:<12} "
+                f"{lesson['subject']}"
+            )
+
+    print("-" * 60)
+    print(f"Всего занятий: {len(schedule)}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -924,6 +963,7 @@ def schedule_menu():
         print("15. Статистика по предметам")
         print("16. Сохранить расписание в TXT")
         print("17. Импортировать расписание из TXT")
+        print("18. Показать расписание таблицей")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -962,6 +1002,8 @@ def schedule_menu():
             export_schedule()
         elif choice == "17":
             import_schedule()
+        elif choice == "18":
+                show_schedule_table()    
         elif choice == "0":
             break
         else:
