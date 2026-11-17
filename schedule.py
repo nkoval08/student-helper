@@ -800,6 +800,43 @@ def show_schedule_table():
     print("-" * 60)
     print(f"Всего занятий: {len(schedule)}")
 
+def check_schedule_conflicts():
+    if not schedule:
+        show_warning("Расписание пока пустое.")
+        return
+
+    show_title("ПРОВЕРКА РАСПИСАНИЯ")
+
+    conflicts = []
+
+    for i in range(len(schedule)):
+        for j in range(i + 1, len(schedule)):
+            first = schedule[i]
+            second = schedule[j]
+
+            if (
+                first["day"] == second["day"]
+                and first["time"] == second["time"]
+            ):
+                conflicts.append((first, second))
+
+    if not conflicts:
+        show_success("Конфликтов в расписании не найдено!")
+        return
+
+    show_warning(
+        f"Найдено конфликтов: {len(conflicts)}"
+    )
+
+    for number, conflict in enumerate(conflicts, start=1):
+        first, second = conflict
+
+        print(f"\nКонфликт №{number}")
+        print(f"День: {first['day']}")
+        print(f"Время: {first['time']}")
+        print(f"Занятие 1: {first['subject']}")
+        print(f"Занятие 2: {second['subject']}")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -964,6 +1001,7 @@ def schedule_menu():
         print("16. Сохранить расписание в TXT")
         print("17. Импортировать расписание из TXT")
         print("18. Показать расписание таблицей")
+        print("19. Проверить расписание на конфликты")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1003,7 +1041,9 @@ def schedule_menu():
         elif choice == "17":
             import_schedule()
         elif choice == "18":
-                show_schedule_table()    
+                show_schedule_table()   
+        elif choice == "19":
+            check_schedule_conflicts() 
         elif choice == "0":
             break
         else:
