@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 from datetime import datetime
+import shutil
 
 from interface import (
     show_title,
@@ -837,6 +838,29 @@ def check_schedule_conflicts():
         print(f"Занятие 1: {first['subject']}")
         print(f"Занятие 2: {second['subject']}")
 
+
+def backup_schedule():
+    if not DATA_FILE.exists():
+        show_warning("Файл расписания пока не создан.")
+        return
+
+    backup_folder = Path(__file__).resolve().parent / "backups"
+
+    backup_folder.mkdir(exist_ok=True)
+
+    backup_file = backup_folder / "schedule_backup.json"
+
+    try:
+        shutil.copy2(DATA_FILE, backup_file)
+
+        show_success("Резервная копия расписания создана!")
+
+        print(f"Файл сохранён здесь: {backup_file}")
+
+    except OSError:
+        show_error("Не удалось создать резервную копию.")
+
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -1002,6 +1026,7 @@ def schedule_menu():
         print("17. Импортировать расписание из TXT")
         print("18. Показать расписание таблицей")
         print("19. Проверить расписание на конфликты")
+        print("20. Создать резервную копию расписания")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1043,7 +1068,9 @@ def schedule_menu():
         elif choice == "18":
                 show_schedule_table()   
         elif choice == "19":
-            check_schedule_conflicts() 
+            check_schedule_conflicts()
+        elif choice == "20":
+            backup_schedule()
         elif choice == "0":
             break
         else:
