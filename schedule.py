@@ -861,6 +861,42 @@ def backup_schedule():
         show_error("Не удалось создать резервную копию.")
 
 
+def restore_schedule_backup():
+    global schedule
+
+    backup_folder = Path(__file__).resolve().parent / "backups"
+    backup_file = backup_folder / "schedule_backup.json"
+
+    if not backup_file.exists():
+        show_warning("Резервная копия не найдена.")
+        return
+
+    confirm = input(
+        "\nВосстановить расписание из копии? "
+        "Текущие данные будут заменены. (да/нет): "
+    ).strip().lower()
+
+    if confirm != "да":
+        show_warning("Восстановление отменено.")
+        return
+
+    try:
+        with open(backup_file, "r", encoding="utf-8") as file:
+            backup_data = json.load(file)
+
+        if not isinstance(backup_data, list):
+            show_error("Файл резервной копии имеет неверный формат.")
+            return
+
+        schedule = backup_data
+        save_schedule()
+
+        show_success("Расписание успешно восстановлено!")
+
+    except (OSError, json.JSONDecodeError):
+        show_error("Не удалось восстановить расписание.")
+
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -1027,6 +1063,7 @@ def schedule_menu():
         print("18. Показать расписание таблицей")
         print("19. Проверить расписание на конфликты")
         print("20. Создать резервную копию расписания")
+        print("21. Восстановить расписание из копии")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1071,6 +1108,8 @@ def schedule_menu():
             check_schedule_conflicts()
         elif choice == "20":
             backup_schedule()
+        elif choice == "21":
+            restore_schedule_backup()
         elif choice == "0":
             break
         else:
