@@ -24,11 +24,20 @@ def load_schedule():
             schedule = json.load(file)
 
 
+
 def save_schedule():
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(schedule, file, ensure_ascii=False, indent=4)
+
+    backup_folder = Path(__file__).resolve().parent / "backups"
+    backup_folder.mkdir(exist_ok=True)
+
+    backup_file = backup_folder / "schedule_auto_backup.json"
+
+    shutil.copy2(DATA_FILE, backup_file)
+
 
 
 def add_lesson():
