@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 import shutil
+from tkinter import messagebox
 
 from interface import (
     show_title,
@@ -929,6 +930,52 @@ def show_schedule_backups():
         print()
 
 
+def delete_schedule_backup():
+    backup_folder = Path(__file__).resolve().parent / "backups"
+
+    if not backup_folder.exists():
+        show_warning("Папка с резервными копиями не найдена.")
+        return
+
+    backup_files = list(backup_folder.glob("*.json"))
+
+    if not backup_files:
+        show_warning("Резервных копий пока нет.")
+        return
+
+    show_title("УДАЛЕНИЕ РЕЗЕРВНОЙ КОПИИ")
+
+    for number, backup_file in enumerate(backup_files, start=1):
+        print(f"{number}. {backup_file.name}")
+
+    try:
+        choice = int(input("\nВведите номер копии для удаления: "))
+
+        if choice < 1 or choice > len(backup_files):
+            show_error("Неверный номер.")
+            return
+
+        selected_file = backup_files[choice - 1]
+
+        confirm = input(
+            f"Удалить файл {selected_file.name}? (да/нет): "
+        ).strip().lower()
+
+        if confirm != "да":
+            show_warning("Удаление отменено.")
+            return
+
+        selected_file.unlink()
+
+        show_success("Резервная копия удалена!")
+
+    except ValueError:
+        show_error("Введите число.")
+
+    except OSError:
+        show_error("Не удалось удалить файл.")
+
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -1097,6 +1144,7 @@ def schedule_menu():
         print("20. Создать резервную копию расписания")
         print("21. Восстановить расписание из копии")
         print("22. Посмотреть резервные копии")
+        print("23. Удалить резервную копию")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1144,7 +1192,9 @@ def schedule_menu():
         elif choice == "21":
             restore_schedule_backup()
         elif choice == "22":
-                show_schedule_backups()
+            show_schedule_backups()
+        elif choice == "23":
+            delete_schedule_backup()
         elif choice == "0":
             break
         else:
