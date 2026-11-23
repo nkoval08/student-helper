@@ -976,6 +976,34 @@ def delete_schedule_backup():
         show_error("Не удалось удалить файл.")
 
 
+def check_schedule_file():
+    if not DATA_FILE.exists():
+        show_warning("Файл расписания пока не создан.")
+        return
+
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if not isinstance(data, list):
+            show_error("Ошибка: данные расписания должны быть списком.")
+            return
+
+        for lesson in data:
+            if not isinstance(lesson, dict):
+                show_error("Ошибка: найдена неправильная запись занятия.")
+                return
+
+        show_success("Файл расписания исправен!")
+        print(f"Количество занятий: {len(data)}")
+
+    except json.JSONDecodeError:
+        show_error("Файл расписания повреждён: ошибка JSON.")
+
+    except OSError:
+        show_error("Не удалось открыть файл расписания.")
+
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -1145,6 +1173,7 @@ def schedule_menu():
         print("21. Восстановить расписание из копии")
         print("22. Посмотреть резервные копии")
         print("23. Удалить резервную копию")
+        print("24. Проверить файл расписания")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1195,6 +1224,8 @@ def schedule_menu():
             show_schedule_backups()
         elif choice == "23":
             delete_schedule_backup()
+        elif choice == "24":
+            check_schedule_file()
         elif choice == "0":
             break
         else:
