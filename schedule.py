@@ -1004,6 +1004,61 @@ def check_schedule_file():
         show_error("Не удалось открыть файл расписания.")
 
 
+def validate_schedule():
+    if not DATA_FILE.exists():
+        show_warning("Файл расписания пока не создан.")
+        return
+
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if not isinstance(data, list):
+            show_error("Расписание должно быть списком.")
+            return
+
+        errors = []
+
+        for number, lesson in enumerate(data, start=1):
+            if not isinstance(lesson, dict):
+                errors.append(f"Запись №{number} не является словарём.")
+                continue
+
+            if not lesson.get("day"):
+                errors.append(f"Занятие №{number}: отсутствует день.")
+
+            if not lesson.get("time"):
+                errors.append(f"Занятие №{number}: отсутствует время.")
+
+            if not lesson.get("subject"):
+                errors.append(f"Занятие №{number}: отсутствует предмет.")
+
+            time = lesson.get("time")
+
+            if time:
+                try:
+                    datetime.strptime(time, "%H:%M")
+                except ValueError:
+                    errors.append(
+                        f"Занятие №{number}: неправильный формат времени."
+                    )
+
+        show_title("РЕЗУЛЬТАТ ПРОВЕРКИ")
+
+        if errors:
+            for error in errors:
+                show_error(error)
+
+            print(f"\nВсего найдено ошибок: {len(errors)}")
+        else:
+            show_success("Все занятия заполнены правильно!")
+            print(f"Проверено занятий: {len(data)}")
+
+    except json.JSONDecodeError:
+        show_error("Файл расписания повреждён.")
+    except OSError:
+        show_error("Не удалось прочитать файл.")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -1174,6 +1229,7 @@ def schedule_menu():
         print("22. Посмотреть резервные копии")
         print("23. Удалить резервную копию")
         print("24. Проверить файл расписания")
+        print("25. Проверить правильность занятий")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1226,6 +1282,8 @@ def schedule_menu():
             delete_schedule_backup()
         elif choice == "24":
             check_schedule_file()
+        elif choice == "25":
+            validate_schedule()
         elif choice == "0":
             break
         else:
