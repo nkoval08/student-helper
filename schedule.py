@@ -1059,6 +1059,63 @@ def validate_schedule():
     except OSError:
         show_error("Не удалось прочитать файл.")
 
+
+def check_schedule_days():
+    if not DATA_FILE.exists():
+        show_warning("Файл расписания пока не создан.")
+        return
+
+    allowed_days = [
+        "понедельник",
+        "вторник",
+        "среда",
+        "четверг",
+        "пятница",
+        "суббота",
+        "воскресенье"
+    ]
+
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if not isinstance(data, list):
+            show_error("Расписание должно быть списком.")
+            return
+
+        errors = []
+
+        for number, lesson in enumerate(data, start=1):
+            if not isinstance(lesson, dict):
+                continue
+
+            day = lesson.get("day")
+
+            if not isinstance(day, str) or not day.strip():
+                errors.append(f"Занятие №{number}: день не указан.")
+                continue
+
+            if day.strip().casefold() not in allowed_days:
+                errors.append(
+                    f"Занятие №{number}: неизвестный день «{day}»."
+                )
+
+        show_title("ПРОВЕРКА ДНЕЙ НЕДЕЛИ")
+
+        if errors:
+            for error in errors:
+                show_error(error)
+
+            print(f"\nНайдено ошибок: {len(errors)}")
+        else:
+            show_success("Все дни недели указаны правильно!")
+            print(f"Проверено занятий: {len(data)}")
+
+    except json.JSONDecodeError:
+        show_error("Файл расписания повреждён.")
+    except OSError:
+        show_error("Не удалось прочитать файл.")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -1230,6 +1287,7 @@ def schedule_menu():
         print("23. Удалить резервную копию")
         print("24. Проверить файл расписания")
         print("25. Проверить правильность занятий")
+        print("26. Проверить дни недели")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1284,6 +1342,8 @@ def schedule_menu():
             check_schedule_file()
         elif choice == "25":
             validate_schedule()
+        elif choice == "26":
+            check_schedule_days()
         elif choice == "0":
             break
         else:
