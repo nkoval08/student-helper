@@ -1116,6 +1116,55 @@ def check_schedule_days():
     except OSError:
         show_error("Не удалось прочитать файл.")
 
+
+def check_schedule_times():
+    if not DATA_FILE.exists():
+        show_warning("Файл расписания пока не создан.")
+        return
+
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if not isinstance(data, list):
+            show_error("Расписание должно быть списком.")
+            return
+
+        errors = []
+
+        for number, lesson in enumerate(data, start=1):
+            if not isinstance(lesson, dict):
+                continue
+
+            time = lesson.get("time")
+
+            if not isinstance(time, str) or not time.strip():
+                errors.append(f"Занятие №{number}: время не указано.")
+                continue
+
+            try:
+                datetime.strptime(time, "%H:%M")
+            except ValueError:
+                errors.append(
+                    f"Занятие №{number}: неправильное время «{time}»."
+                )
+
+        show_title("ПРОВЕРКА ВРЕМЕНИ")
+
+        if errors:
+            for error in errors:
+                show_error(error)
+
+            print(f"\nНайдено ошибок: {len(errors)}")
+        else:
+            show_success("Время всех занятий указано правильно!")
+            print(f"Проверено занятий: {len(data)}")
+
+    except json.JSONDecodeError:
+        show_error("Файл расписания повреждён.")
+    except OSError:
+        show_error("Не удалось прочитать файл.")
+
 def change_lesson_time():
     if not schedule:
         show_warning("Расписание пока пустое.")
@@ -1288,6 +1337,7 @@ def schedule_menu():
         print("24. Проверить файл расписания")
         print("25. Проверить правильность занятий")
         print("26. Проверить дни недели")
+        print("27. Проверить время занятий")
         print("0. Назад")
 
         choice = input("\nВыберите пункт: ")
@@ -1344,6 +1394,8 @@ def schedule_menu():
             validate_schedule()
         elif choice == "26":
             check_schedule_days()
+        elif choice == "27":
+            check_schedule_times()
         elif choice == "0":
             break
         else:
